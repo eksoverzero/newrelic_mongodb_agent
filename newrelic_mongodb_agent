@@ -13,7 +13,7 @@ module NewRelic::MongodbAgent
     agent_guid "com.secondimpression.newrelic-mongodb-agent"
     agent_config_options :endpoint, :username, :password, :database, :port, :agent_name, :ssl
     agent_human_labels("MongoDB") { "#{agent_name}" }
-    agent_version '2.4.4-3'
+    agent_version '2.4.5'
 
     def setup_metrics
       self.port ||= 27017
