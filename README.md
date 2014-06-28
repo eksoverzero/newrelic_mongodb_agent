@@ -1,5 +1,7 @@
 # New Relic+MongoDB Extension
 
+**Repurposed from https://github.com/MongoHQ/newrelic-mongodb-agent**
+
 A plugin to gather metrics from your MongoDB deployment and send the
 metrics to the New Relic Platform.
 
@@ -10,7 +12,7 @@ Ruby and Ruby Gems.  If you have this knowledge, and feel that you
 breezed through the installation, please consider writing a tutorial for
 others.  If you are lacking knowledge on the Ruby and Ruby gems
 configuration, please post questions to the Issues section of the
-project, and we will help as quickly as possible. 
+project, and we will help as quickly as possible.
 
 ## Metrics
 
@@ -33,49 +35,38 @@ To use with Replica Sets and Sharding, you will need to run one agent
 per host being monitored.  In the future, we are planning to do
 inspection and automated monitoring for complete environments.
 
-## Base Installation and Configuration
+## Instructions for running the MongoDB plugin agent
 
-Prior to installation, you will need to configure Ruby and Gems with `foreman`.  There are 
+1. run `bundle install` to install required gems
+2. Copy `config/newrelic_plugin.yml.example` to `config/newrelic_plugin.yml`
+3. Edit `config/newrelic_plugin.yml` and replace "YOUR_LICENSE_KEY_HERE" with your New Relic license key
+4. Edit the `config/newrelic_plugin.yml` file and add MongoDB connection and database settings
+5. Running the plugin
 
-1. Download the latest release from (https://github.com/MongoHQ/newrelic-mongodb-agent/releases)
-2. Copy `config/newrelic_plugin.yml.example` to `config/newrelic_plugin.yml` 
-3. Modify `config/newrelic_plugin.yml` as required
-3. Install required Ruby gems for the agent by running `bundle install` from the plugins parent directory.
-4. Run `foreman start` OR `./new_relic_mongodb_agent` to run in the foreground for testing/debuggin and `./new_relic_mongodb_agent.daemon start` to run in the background.
-5. See "MongoDB" on the left side of your New Relic screen with available metrics
+In order to check your configuration, you can launch the plugin
+in foreground mode, with all output going to stdout:
 
-*It is best not to run this with `sudo` or `root` privileges.  If you find permissions errors, please consider creating a `~/.gems` directory for an unprivileged user, and setting the `GEM_HOME=~.gems` evironmental variable.*
+  ./newrelic_mongodb_agent
 
-## Production Deployment Methods
+Carefully check plugin's output for any possible error messages.
+In case of success, collected data should appear in the New Relic
+user interface shortly after starting.
 
-Two (of many) methods for deploying this New Relic Platform plugin:
+Plugin can also be started as a daemon using the following command:
 
-1. On Linux (with upstart)
-2. On Linux (with using Daemons and/or Monit)
-3. Heroku 
+  ./newrelic_mongodb_agent.daemon start
 
-If you have documentation for other deployment methods, please submit a
-pull request.
+In this case you can check its status by running
 
-### On Host Deployment
+  ./newrelic_mongodb_agent.daemon status
 
-Run the above steps on base installation and configuration.  Then, run:
+and stop it with
 
-`foreman export upstart /etc/init -a newrelic_mongodb`
+  ./newrelic_mongodb_agent.daemon stop
 
-This will create an upstart manageable process that will run on server
-start.
-
-### On Host Deployment using Monit
-
-Using monit over upstart seems easier as the process can be monitored for status and resource usage rather that just system and manual starts.
-
-`sudo apt-get install monit`
-
-Example monit config:
+### Monit example
 
 ```
-# /etc/monit/conf.d/new_relic_mongodb_agent.conf
 check process newrelic_mongodb_agent
   with pidfile /home/ubuntu/newrelic_mongodb_agent/newrelic_mongodb_agent.pid
   start program = "/bin/su - ubuntu -c '/home/ubuntu/newrelic_mongodb_agent/newrelic_mongodb_agent.daemon start'" with timeout 90 seconds
@@ -84,26 +75,18 @@ check process newrelic_mongodb_agent
   group newrelic_agent
 ```
 
-### Heroku
+### Supervisord example
 
-For off sight manage of your resources, which is great "in the cloud".
-If you are familure with Heroku, you can run
-
-1. Clone this repo
-2. Create a new heroku application: `git apps:create --app=<unique name>`
-3. Make modifications to the `config/newrelic_plugin.yml` file from the
-   template
-4. Commit the change
-5. Run `git push heroku master`
-6. Add a full-time runner for the worker: `git ps:scale mongodb=2 --app=<unique name>`
-
-
-## Requesting Changes
-
-To request additions to the New Relic dashboard or platform, please
-complete a Github issue with the errors, features, or dashboard changes.
-The more information and diagrams you can provide the quicker and easier the
-communication process will proceed.
-
-If you know the error, and would like to make changes, we do accept pull
-requests.
+```
+[program:newrelic_mongodb]
+command = bash -c ./newrelic_mongodb_agent
+directory = /opt/newrelic_mongodb_agent
+autostart = true
+autorestart = true
+startretries = 10
+user = root
+startsecs = 10
+redirect_stderr = true
+stdout_logfile_maxbytes = 50MB
+stopwaitsecs = 10
+```

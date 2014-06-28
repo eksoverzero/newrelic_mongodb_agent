@@ -10,13 +10,13 @@ include Mongo
 module NewRelic::MongodbAgent
 
   class Agent < NewRelic::Plugin::Agent::Base
-    agent_guid "com.mongohq.mongo-agent"
+    agent_guid "com.secondimpression.newrelic-mongodb-agent"
     agent_config_options :endpoint, :username, :password, :database, :port, :agent_name, :ssl
     agent_human_labels("MongoDB") { "#{agent_name}" }
     agent_version '2.4.4-3'
 
     def setup_metrics
-      self.port ||= 27017 
+      self.port ||= 27017
       self.agent_name ||= "#{endpoint}:#{port}/#{database}"
     end
 
@@ -30,14 +30,14 @@ module NewRelic::MongodbAgent
       report_counter_metric("Network/Requests", "requests/sec", stats['network']['numRequests'])
 
       # Ops counters
-      report_counter_metric("Opcounters/Insert", "inserts",    stats['opcounters']['insert'])      
-      report_counter_metric("Opcounters/Query", "queries",     stats['opcounters']['query'])      
+      report_counter_metric("Opcounters/Insert", "inserts",    stats['opcounters']['insert'])
+      report_counter_metric("Opcounters/Query", "queries",     stats['opcounters']['query'])
       report_counter_metric("Opcounters/Update", "updates",    stats['opcounters']['update'])
       report_counter_metric("Opcounters/Delete", "deletes",    stats['opcounters']['delete'])
       report_counter_metric("Opcounters/GetMore", "getmores",  stats['opcounters']['getmore'])
-      report_counter_metric("Opcounters/Command", "commands",  stats['opcounters']['command'])  
+      report_counter_metric("Opcounters/Command", "commands",  stats['opcounters']['command'])
 
-      # Faults and assertions 
+      # Faults and assertions
       report_counter_metric("Extra/Page Faults", "pagefaults/sec",  stats['extra_info']['page_faults'])
       report_counter_metric("Asserts/Regular",           "regular",         stats['asserts']['regular'])
       report_counter_metric("Asserts/Warning",           "warning",         stats['asserts']['warning'])
@@ -154,7 +154,4 @@ module NewRelic::MongodbAgent
   # Launch the agent; this never returns.
   #
   NewRelic::Plugin::Run.setup_and_run
-
 end
-
-
