@@ -46,7 +46,9 @@ inspection and automated monitoring for complete environments.
 In order to check your configuration, you can launch the plugin
 in foreground mode, with all output going to stdout:
 
-  ./newrelic_mongodb_agent
+```
+./newrelic_mongodb_agent
+```
 
 Carefully check plugin's output for any possible error messages.
 In case of success, collected data should appear in the New Relic
@@ -54,15 +56,21 @@ user interface shortly after starting.
 
 Plugin can also be started as a daemon using the following command:
 
-  ./newrelic_mongodb_agent.daemon start
+```
+./newrelic_mongodb_agent.daemon start
+```
 
 In this case you can check its status by running
 
-  ./newrelic_mongodb_agent.daemon status
+```
+./newrelic_mongodb_agent.daemon status
+```
 
 and stop it with
 
-  ./newrelic_mongodb_agent.daemon stop
+```
+./newrelic_mongodb_agent.daemon stop
+```
 
 ### Monit example
 
@@ -78,9 +86,9 @@ check process newrelic_mongodb_agent
 ### Supervisord example
 
 ```
-[program:newrelic_mongodb]
+[program:newrelic_mongodb_agent]
 command = bash -c ./newrelic_mongodb_agent
-directory = /opt/newrelic_mongodb_agent
+directory = /home/ubuntu/newrelic_mongodb_agent
 autostart = true
 autorestart = true
 startretries = 10
